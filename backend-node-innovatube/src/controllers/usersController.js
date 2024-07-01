@@ -1,99 +1,180 @@
 const User = require("../models/user");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-// const fetchNotes = async (req, res) =>{
-//     try {
-//         const notes = await Note.find();
-
-//         res.json({ notes: notes});
-//     } catch (error) {
-//         res.status(500).json({
-//             status: "failed",
-//             data: "Internal Issue"
-//         })
-//     }
-// };
-
-// const fetchNoteById = async (req, res) =>{
-//     try {
-//         const id = req.params.id;
-//         const note = await Note.findById(id);
-
-//         res.json({ note });
-//     } catch (error) {
-//         res.status(500).json({
-//             status: "failed",
-//             data: "Internal Issue"
-//         })
-//     }
-// };
-
-const createUser = async (req, res) =>{
+const createUser = async (req, res) => {
     try {
         console.log("req.body", req.body);
-        const {name, lastname, username, email, password} = req.body;
+        const { name, lastname, username, email, password, securityQuestion, securityAnswer } = req.body;
 
-        const user = await User.create({
-            name, 
-            lastname, 
-            username, 
-            email, 
-            password
+        let user = await User.findOne({ $or: [{ username }, { email }] });
+        if (user) {
+            return res.status(400).json({
+                status: "Failed",
+                response: 'El usuario o el email ya existen'
+            });
+        }
+
+
+        user = new User({
+            name,
+            lastname,
+            username,
+            email,
+            password,
+            securityQuestion,
+            securityAnswer
         });
 
-        // console.log("res", res.json({user}));
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+        user.securityAnswer = await bcrypt.hash(securityAnswer, salt);
 
-
-        res.json({user});
+        await user.save();
+        const payload = { user: { id: user.id } };
+        jwt.sign(payload, 'secret', { expiresIn: '12h' }, (err, token) => {
+            if (err) throw err;
+            res.status(200).json(
+                {
+                    status: "Success",
+                    response: "User created successfully",
+                    token: token
+                }
+            );
+        });
     } catch (error) {
         console.log("error", error);
         res.status(500).json({
-            status: "failed",
-            data: "Internal Issue"
+            status: "Failed",
+            response: "Internal Issue"
         })
-    }  
+    }
 };
 
-// const updateNote = async (req, res) =>{
-//     try {
-//         const id = req.params.id;
+const loginUser = async (req, res) => {
+    const { usernameOrEmail, password } = req.body;
 
-//         const {title, body} = req.body;
-//         const note = await Note.findByIdAndUpdate(id, {
-//             title,
-//             body,
-//         }, {new: true});
+    try {
+        const user = await User.findOne({ $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }] });
+        if (!user) {
+            return res.status(400).json({
+                status: "Not Found",
+                response: "Username or Email not found"
+            })
+        }
 
-//         res.json({ note });
-//     } catch (error) {
-//         res.status(500).json({
-//             status: "failed",
-//             data: "Internal Issue"
-//         })
-//     }
-// };
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                status: "Invalid Credentials",
+                response: "Wrong Password Please Check"
+            })
+        }
 
-// const deleteNote = async (req, res) =>{
-//     try {
-//         const id = req.params.id;
-//         const note = await Note.findByIdAndDelete(id);
+        const payload = { user: { id: user.id } };
+        jwt.sign(payload, 'secret', { expiresIn: '1h' }, (err, token) => {
+            if (err) throw err;
+            res.status(200).json(
+                {
+                    status: "Correct Login",
+                    response: "Correct User Credentials",
+                    token: token
+                }
+            );
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({
+            status: "Failed",
+            response: "Internal Issue"
+        })
+    }
+};
 
-//         res.status(200).json({
-//             status: "successfully delete record",
-//             note: note
-//         })
-//     } catch (error) {
-//         res.status(500).json({
-//             status: "failed",
-//             data: "Internal Issue"
-//         })
-//     }
-// };
+const recoverPassword = async (req, res) => {
+    const { usernameOrEmail, securityAnswer } = req.body;
+
+    try {
+        const user = await User.findOne({ $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }] });
+        if (!user) {
+            return res.status(400).json({
+                status: "Not Found",
+                response: "Username or Email not found"
+            })
+        }
+
+        const isMatch = await bcrypt.compare(securityAnswer, user.securityAnswer);
+        if (!isMatch) {
+            return res.status(400).json({
+                status: "Incorrect",
+                response: "Incorrect User Security Response"
+            })
+        }
+
+        const payload = { user: { id: user.id } };
+        console.log("payload", payload);
+        jwt.sign(payload, 'secret', { expiresIn: '15m' }, (err, token) => {
+            console.log("entrando al jwt sign")  
+            if (err) throw err;
+            res.status(200).json({
+                status: "Correct",
+                response: "Correct User Security Response",
+                temporalToken: token
+            });
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({
+            status: "Failed",
+            response: "Internal Issue"
+        })
+    }
+};
+
+const resetPassword = async (req, res) => {
+    const { temporalToken, newPassword } = req.body;
+    console.log("req.body", req.body)
+
+    try {
+        const decoded = jwt.verify(temporalToken, 'secret');
+        console.log("decoded", decoded);
+        const userId = decoded.user.id;
+        console.log("userId", userId);
+        
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(400).json({
+                status: "Not Found",
+                response: "User not found"
+            })
+        };
+
+        console.log("userId finded", userId);
+        
+        console.log("newPassword", newPassword);
+        const salt = await bcrypt.genSalt(10);
+        console.log("salt", salt);
+        user.password = await bcrypt.hash(newPassword, salt);
+
+        await user.save();
+        res.status(200).json({
+            status: "Password Updated",
+            response: "User Password Updated Successfully"
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({
+            status: "Failed",
+            response: "Internal Issue or Token Expired"
+        });
+    }
+};
+
 
 module.exports = {
-    // fetchNotes,
-    // fetchNoteById,
+    loginUser,
     createUser,
-    // updateNote,
-    // deleteNote
+    recoverPassword,
+    resetPassword,
 }
 

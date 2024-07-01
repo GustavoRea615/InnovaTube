@@ -5,14 +5,14 @@ require("dotenv").config();
 const connectToDb = require("./src/config/connectToDB");
 const port = process.env.PORT;
 const app = express();
-const usersController = require("./src/controllers/usersController");
+const router = require("./src/router");
 
 connectToDb();
 
 app.use(express.json());
 app.use(cors());
 
-app.post('/createUser', usersController.createUser)
+app.use("/api/v1", router);
 
 app.listen(port);
 // app.listen(port, () => {
