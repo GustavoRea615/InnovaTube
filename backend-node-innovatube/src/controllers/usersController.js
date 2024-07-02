@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 
 const createUser = async (req, res) => {
     try {
-        console.log("req.body", req.body);
         const { name, lastname, username, email, password, securityQuestion, securityAnswer } = req.body;
 
         let user = await User.findOne({ $or: [{ username }, { email }] });
@@ -72,7 +71,7 @@ const loginUser = async (req, res) => {
         }
 
         const payload = { user: { id: user.id } };
-        jwt.sign(payload, 'secret', { expiresIn: '1h' }, (err, token) => {
+        jwt.sign(payload, 'secret', { expiresIn: '12h' }, (err, token) => {
             if (err) throw err;
             res.status(200).json(
                 {
@@ -112,9 +111,7 @@ const recoverPassword = async (req, res) => {
         }
 
         const payload = { user: { id: user.id } };
-        console.log("payload", payload);
         jwt.sign(payload, 'secret', { expiresIn: '15m' }, (err, token) => {
-            console.log("entrando al jwt sign")  
             if (err) throw err;
             res.status(200).json({
                 status: "Correct",
@@ -133,13 +130,10 @@ const recoverPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
     const { temporalToken, newPassword } = req.body;
-    console.log("req.body", req.body)
 
     try {
         const decoded = jwt.verify(temporalToken, 'secret');
-        console.log("decoded", decoded);
         const userId = decoded.user.id;
-        console.log("userId", userId);
         
         const user = await User.findById(userId);
         if (!user) {
@@ -149,11 +143,7 @@ const resetPassword = async (req, res) => {
             })
         };
 
-        console.log("userId finded", userId);
-        
-        console.log("newPassword", newPassword);
         const salt = await bcrypt.genSalt(10);
-        console.log("salt", salt);
         user.password = await bcrypt.hash(newPassword, salt);
 
         await user.save();

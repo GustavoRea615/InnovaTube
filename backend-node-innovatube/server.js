@@ -14,7 +14,6 @@ app.use(cors());
 
 app.use("/api/v1", router);
 
-app.listen(port);
-// app.listen(port, () => {
-//   console.log(`Backend now is running in http://localhost:${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Backend now is running in http://localhost:${port}`);
+});
