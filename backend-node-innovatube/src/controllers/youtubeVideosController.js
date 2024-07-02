@@ -11,7 +11,7 @@ const searchVideos = async (req, res) => {
         q: query,
         type: 'video',
         key: YOUTUBE_API_KEY,
-        maxResults: 5
+        maxResults: 30
       }
     });
 

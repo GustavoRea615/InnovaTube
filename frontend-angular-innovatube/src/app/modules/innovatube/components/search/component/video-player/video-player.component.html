@@ -1,0 +1,26 @@
+<mat-card class="card youtube-player-container video-container">
+    <button mat-icon-button class="close-button" [mat-dialog-close]="true">
+        <mat-icon class="close-icon" color="warn">close</mat-icon>
+    </button>
+    <mat-card-header>
+        <mat-card-title>{{ videoTitle }}</mat-card-title>
+        <mat-card-subtitle>{{ channelTitle }}</mat-card-subtitle>
+    </mat-card-header>
+    <div class="video-player-align">
+        <iframe width="560" height="315" [src]="sanitizedUrl" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>
+    </div>
+    <mat-card-content>
+        <p><strong>Publication Date:</strong> {{ publishedAt | date }}</p>
+        <button mat-icon-button class="favorite-button" (click)="changeFavorite(data.id, videoTitle)">
+            <mat-icon [color]="isFavorite ? 'primary' : 'warn'">{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+        </button>
+        <p><strong>{{description}}</strong></p>
+        <p><strong>Tags:</strong></p>
+        <mat-chip-list>
+            <mat-chip class="white-text" *ngFor="let tag of tags">{{ tag }} </mat-chip>
+        </mat-chip-list>
+    </mat-card-content>
+</mat-card>

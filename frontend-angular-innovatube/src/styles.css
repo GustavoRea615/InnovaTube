@@ -1,0 +1,85 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.custom-dialog-container .mat-dialog-container {
+    padding: 0px !important;
+}
+
+.cdk-overlay-pane.my-dialog {
+    position: relative!important;
+  }
+.close.mat-button {
+position: absolute;
+top: 0;
+right: 0;
+padding: 5px;
+line-height: 14px;
+min-width: auto;
+}
+
+.material-icons.color_white {
+    color: #ffffff;
+}
+
+.close-button{
+    float: right;
+    top: -16px;
+    right: -16px;
+}
+
+.close-icon {
+  transition: 1s ease-in-out;
+}
+
+.close-icon:hover {
+  transform: rotate(180deg);
+}
+
+::ng-deep .icon-outside .close-button{
+  float: right;
+  top:-52px;
+  right:-52px;
+}
+
+::ng-deep .icon-outside .mat-dialog-container {
+ overflow: unset
+}
+
+.favorite-button{
+    float: right;
+    top: -70px;
+}
+
+.bg-white{
+    background-color: white;
+}
+
+.title-section{
+    font-weight: 500 !important;
+}
+
+.mat-card-image {
+    width: 50% !important;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.container-details{
+    max-height: 300px;
+    padding: 10px;
+}
+
+.image-login{
+    width: 180px;
+    margin: auto;
+    display: block;
+}
+
+.image-menu{
+    width: 40px;
+    margin: auto;
+    display: block;
+}

@@ -1,0 +1,53 @@
+<mat-card>
+    <mat-card-title>Login Innovatube</mat-card-title>
+    <div>
+        <img src="../../../../../assets/img/logo.png" alt="Logo" class="image-login" />
+    </div>
+    <br>
+    <br>
+    <mat-card-content>
+        <form [formGroup]="formGroup">
+            <p>
+                <mat-form-field>
+                    <input matInput [(ngModel)]="usernameOrEmail" type="text" id="usernameOrEmail" name="usernameOrEmail"
+                        formControlName="usernameOrEmail" placeholder="Username or Email" nbInput fullWidth="true"
+                        shape="rectangle" autofocus maxlength="50" required="true"
+                        [attr.aria-invalid]="isInvalid('usernameOrEmail') ? true : null" class="form-control" />
+                </mat-form-field>
+                <ng-container *ngIf="isInvalid('usernameOrEmail')">
+                    <div>
+                        <p class="" *ngIf="controlHasError('usernameOrEmail', 'required')" style="color:red">
+                            Please use a correct Username or Email
+                        </p>
+                    </div>
+                </ng-container>
+            </p>
+            <p>
+                <mat-form-field>
+                    <input type="password" matInput id="password" name="password" formControlName="password"
+                        placeholder="Password" nbInput fullWidth="true" shape="rectangle" autofocus maxlength="16"
+                        required="true" [attr.aria-invalid]="isInvalid('password') ? true : null"
+                        class="form-control" [(ngModel)]="password" />
+                </mat-form-field>
+                <ng-container *ngIf="isInvalid('password')">
+                    <div>
+                        <p class="" *ngIf="controlHasError('password', 'required')" style="color:red">
+                            Please insert your password correctly
+                        </p>
+                    </div>
+                </ng-container>
+            </p>
+
+            <div class="button">
+                <button mat-raised-button color="primary" (click)="login()">Login</button>
+            </div>
+
+            <mat-card-actions>
+              <!-- <button mat-button (click)="openRecoverPasswordDialog()">Forgot Password?</button> -->
+              <button mat-button>Forgot Password?</button>
+              <button mat-button [routerLink]="['/register']">Register</button>
+            </mat-card-actions>
+
+        </form>
+    </mat-card-content>
+</mat-card>

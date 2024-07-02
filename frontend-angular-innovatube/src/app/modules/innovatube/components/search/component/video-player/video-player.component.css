@@ -1,0 +1,9 @@
+.video-player-align{
+    display: flex;
+    justify-content: center;
+}
+
+.video-container {
+    max-height: 60vh;
+    overflow-y: auto;
+}

@@ -1,0 +1,74 @@
+<mat-card>
+    <mat-card-title>Create Account Innovatube</mat-card-title>
+    <div>
+        <img src="../../../../../assets/img/logo.png" alt="Logo" class="image-login" />
+    </div>
+    <br>
+    <br>
+    <mat-card-content>
+        <form [formGroup]="formGroup">
+            <p>
+                <mat-form-field>
+                    <input matInput [(ngModel)]="name" type="text" id="name" name="name"
+                        formControlName="name" placeholder="Name" nbInput fullWidth="true"
+                        shape="rectangle" autofocus maxlength="50" required="true"
+                        class="form-control" />
+                </mat-form-field>
+            </p>
+            <p>
+                <mat-form-field>
+                    <input matInput [(ngModel)]="lastname" type="text" id="lastname" name="lastname"
+                        formControlName="lastname" placeholder="Lastname" nbInput fullWidth="true"
+                        shape="rectangle" autofocus maxlength="50" required="true"
+                        class="form-control" />
+                </mat-form-field>
+            </p>
+            <p>
+                <mat-form-field>
+                    <input matInput [(ngModel)]="username" type="text" id="username" name="username"
+                        formControlName="username" placeholder="Username" nbInput fullWidth="true"
+                        shape="rectangle" autofocus maxlength="50" required="true"
+                         class="form-control" />
+                </mat-form-field>
+            </p>
+            <p>
+                <mat-form-field>
+                    <input matInput [(ngModel)]="email" type="email" id="email" name="email"
+                        formControlName="email" placeholder="Email" nbInput fullWidth="true"
+                        shape="rectangle" autofocus maxlength="50" required="true"
+                         class="form-control" />
+                </mat-form-field>
+            </p>
+            <p>
+                <mat-form-field>
+                    <input type="password" [(ngModel)]="password" matInput id="password" name="password" formControlName="password"
+                        placeholder="Password" nbInput fullWidth="true" shape="rectangle" autofocus maxlength="16"
+                        required="true"
+                        class="form-control" />
+                </mat-form-field>
+            </p>
+            <p>
+                <mat-form-field>
+                    <input type="text" matInput [(ngModel)]="securityQuestion" id="securityQuestion" name="securityQuestion" formControlName="securityQuestion"
+                        placeholder="Security Question" nbInput fullWidth="true" shape="rectangle" autofocus maxlength="50"
+                        required="true"
+                        class="form-control" />
+                </mat-form-field>
+            </p>
+            <p>
+                <mat-form-field>
+                    <input type="text" matInput [(ngModel)]="securityAnswer" id="securityAnswer" name="securityAnswer" formControlName="securityAnswer"
+                        placeholder="Security Answer" nbInput fullWidth="true" shape="rectangle" autofocus maxlength="50"
+                        required="true"
+                        class="form-control" />
+                </mat-form-field>
+            </p>
+
+            <div class="button">
+                <button mat-raised-button color="danger" [routerLink]="['/login']">Back</button>
+                <button mat-raised-button color="primary" (click)="register()">Create</button>
+            </div>
+
+        </form>
+    </mat-card-content>
+</mat-card>
